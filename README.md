@@ -1,7 +1,7 @@
 # Semester Project Requirements Document
 
 ## Project Title: CardFlow
-## Developer Name: [Your Name]
+## Developer Name: Stephen Bessey
 
 ## Business Context
 
