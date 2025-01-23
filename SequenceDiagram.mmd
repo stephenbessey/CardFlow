@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant M as Merchant POS
+    participant C as CardFlow
+    participant B as Bank
+    
+    M->>C: Submit Transaction
+    activate C
+    C->>C: Validate Data
+    C->>B: Request Authorization
+    activate B
+    B->>B: Check Funds
+    B-->>C: Auth Response
+    deactivate B
+    C->>C: Log Transaction
+    C-->>M: Transaction Result
+    deactivate C
