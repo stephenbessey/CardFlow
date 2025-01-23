@@ -1,0 +1,12 @@
+graph TD
+    M[Merchant POS System]
+    C[CardFlow Clearinghouse]
+    B[Banks]
+    P[Payment Networks]
+    
+    M -->|Submit Transaction| C
+    C -->|Process Payment| B
+    C -->|Route Transaction| P
+    P -->|Validate Network| B
+    B -->|Auth Response| C
+    C -->|Transaction Result| M
