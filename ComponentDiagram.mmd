@@ -1,0 +1,14 @@
+graph TB
+    subgraph CardFlow System
+        API[API Gateway]
+        Auth[Auth Service]
+        Trans[Transaction Service]
+        Log[Logging Service]
+        DB[(Transaction DB)]
+    end
+    
+    API --> Auth
+    API --> Trans
+    Trans --> Log
+    Trans --> DB
+    Auth --> DB
