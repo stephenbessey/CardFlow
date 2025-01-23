@@ -1,0 +1,9 @@
+graph LR
+    A[Card Swipe] -->|1. Read Card| B[Validate Data]
+    B -->|2. Valid| C[Process Payment]
+    B -->|2. Invalid| F[Decline]
+    C -->|3. Submit| D[Check Funds]
+    D -->|4. Sufficient| E[Approve]
+    D -->|4. Insufficient| F[Decline]
+    E -->|5. Complete| G[Log Transaction]
+    F -->|5. Complete| G[Log Transaction]
