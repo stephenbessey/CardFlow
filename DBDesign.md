@@ -2,10 +2,10 @@
 
 ## Tables
 
-### Merchants Table
+### Merchant Table
 **Primary Key Structure:**
 - Partition Key: MerchantName (String)
-- Sort Key: MerchantToken (String)
+- Sort Key: Token (String)
 
 **Additional Attributes:**
 - MerchantBankAccount (String)
