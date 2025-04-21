@@ -1,16 +1,45 @@
 sequenceDiagram
-    participant M as Merchant POS
-    participant C as CardFlow
-    participant B as Bank
+    participant Merchant
+    participant Processor as Payment Processor
+    participant MerchantDB as Merchant DB
+    participant Bank as Bank API
+    participant TransactionDB as Transaction Log
     
-    M->>C: Submit Transaction
-    activate C
-    C->>C: Validate Data
-    C->>B: Request Authorization
-    activate B
-    B->>B: Check Funds
-    B-->>C: Auth Response
-    deactivate B
-    C->>C: Log Transaction
-    C-->>M: Transaction Result
-    deactivate C
+    Merchant->>Processor: send_payment_request(merchant_data)
+    activate Processor
+    Processor->>Processor: validate_request_parameters()
+    
+    alt Invalid Request Parameters
+        Processor-->>Merchant: return 400 Bad Request
+    else Valid Request Parameters
+        Processor->>MerchantDB: get_merchant_authorization(merchant_name, token)
+        activate MerchantDB
+        MerchantDB-->>Processor: return merchant_data
+        deactivate MerchantDB
+        
+        alt Merchant Not Authorized
+            Processor->>TransactionDB: log_transaction(unauthorized)
+            Processor-->>Merchant: return 401 Unauthorized
+        else Merchant Authorized
+            alt Bank Not Supported
+                Processor->>TransactionDB: log_transaction(unsupported_bank)
+                Processor-->>Merchant: return 400 Bank Not Supported
+            else Bank Supported
+                Processor->>Bank: process_bank_transaction(cc_number, amount)
+                activate Bank
+                
+                alt Transaction Succeeds
+                    Bank-->>Processor: return success
+                    Processor->>TransactionDB: log_transaction(success)
+                    Processor-->>Merchant: return 200 Success
+                else Transaction Fails
+                    Bank-->>Processor: return error
+                    Processor->>TransactionDB: log_transaction(error)
+                    Processor-->>Merchant: return appropriate error code
+                end
+                deactivate Bank
+            end
+        end
+    end
+    
+    deactivate Processor
