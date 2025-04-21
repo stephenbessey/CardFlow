@@ -1,12 +1,28 @@
 graph TD
-    M[Merchant POS System]
-    C[CardFlow Clearinghouse]
-    B[Banks]
-    P[Payment Networks]
+    Customer((Merchant\n[Person]\n\nInitiates payment\ntransactions))
+    Website[Website\n[Software System]\n\nPayment processing interface]
+    Database[(Database\n[Database: DynamoDB]\n\nStores merchant and\ntransaction data)]
     
-    M -->|Submit Transaction| C
-    C -->|Process Payment| B
-    C -->|Route Transaction| P
-    P -->|Validate Network| B
-    B -->|Auth Response| C
-    C -->|Transaction Result| M
+    PaymentProcessor[Payment Processing\n[Software System]\n\nProcesses payment transactions]
+    BankSystem1[Chase Bank API\n[Software System]\n\nHandles Chase bank transactions]
+    BankSystem2[Citibank API\n[Software System]\n\nHandles Citibank transactions]
+    TransactionLog[Transaction Logging\n[Software System]\n\nRecords all transaction activity]
+    
+    Customer -->|"Sends payment\nrequests"| Website
+    Website -->|"REST API"| PaymentProcessor
+    Website -->|"Query/Store\nData"| Database
+    
+    PaymentProcessor -->|"Verify merchant"| Database
+    PaymentProcessor -->|"Process Chase\ntransactions"| BankSystem1
+    PaymentProcessor -->|"Process Citibank\ntransactions"| BankSystem2
+    PaymentProcessor -->|"Log transactions"| TransactionLog
+    
+    classDef person fill:#08427B,color:#fff,stroke:#052E56,stroke-width:1px;
+    classDef system fill:#1168BD,color:#fff,stroke:#0B4884,stroke-width:1px;
+    classDef database fill:#1C8CD8,color:#fff,stroke:#166BAD,stroke-width:1px;
+    classDef external fill:#666666,color:#fff,stroke:#4D4D4D,stroke-width:1px;
+    
+    class Customer person;
+    class Website,PaymentProcessor,TransactionLog system;
+    class Database database;
+    class BankSystem1,BankSystem2 external;
