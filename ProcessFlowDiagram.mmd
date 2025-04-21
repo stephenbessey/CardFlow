@@ -1,9 +1,35 @@
-graph LR
-    A[Card Swipe] -->|1. Read Card| B[Validate Data]
-    B -->|2. Valid| C[Process Payment]
-    B -->|2. Invalid| F[Decline]
-    C -->|3. Submit| D[Check Funds]
-    D -->|4. Sufficient| E[Approve]
-    D -->|4. Insufficient| F[Decline]
-    E -->|5. Complete| G[Log Transaction]
-    F -->|5. Complete| G[Log Transaction]
+flowchart TD
+    start((start)) --> browse[Merchant sends\npayment request]
+    
+    browse --> validateRequest[Validate request\nparameters]
+    validateRequest --> reqValid{Request\nvalid?}
+    
+    reqValid -->|No| error1[Return 400\nBad Request]
+    reqValid -->|Yes| authMerchant[Verify merchant\nauthorization]
+    
+    authMerchant --> merchantValid{Merchant\nvalid?}
+    merchantValid -->|No| error2[Return 401\nUnauthorized]
+    
+    merchantValid -->|Yes| validateBank[Validate bank\ntype]
+    validateBank --> bankValid{Bank\nsupported?}
+    
+    bankValid -->|No| error3[Return 400\nBank Not Supported]
+    bankValid -->|Yes| processPayment[Process payment\nwith bank]
+    
+    processPayment --> paymentSuccess{Payment\nsucceeded?}
+    
+    paymentSuccess -->|No| checkErrorType{Error\ntype?}
+    checkErrorType -->|Timeout| error4[Return 503\nBank Not Available]
+    checkErrorType -->|Insufficient Funds| error5[Return 400\nInsufficient Funds]
+    checkErrorType -->|Invalid Card| error6[Return 400\nCard Not Valid]
+    
+    paymentSuccess -->|Yes| logSuccess[Log successful\ntransaction]
+    logSuccess --> sendConfirmation[Send transaction\nconfirmation]
+    sendConfirmation --> finish((End))
+    
+    error1 --> finish
+    error2 --> finish
+    error3 --> finish
+    error4 --> finish
+    error5 --> finish
+    error6 --> finish
