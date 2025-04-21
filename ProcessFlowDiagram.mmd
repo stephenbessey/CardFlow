@@ -1,7 +1,7 @@
 flowchart TD
     start((start)) --> browse[Merchant sends payment request]
     
-    browse --> validateRequest[Validate request\nparameters]
+    browse --> validateRequest[Validate request parameters]
     validateRequest --> reqValid{Request valid?}
     
     reqValid -->|No| error1[Return 400 Bad Request]
