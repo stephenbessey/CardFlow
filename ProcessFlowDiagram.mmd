@@ -1,30 +1,30 @@
 flowchart TD
-    start((start)) --> browse[Merchant sends\npayment request]
+    start((start)) --> browse[Merchant sends payment request]
     
     browse --> validateRequest[Validate request\nparameters]
-    validateRequest --> reqValid{Request\nvalid?}
+    validateRequest --> reqValid{Request valid?}
     
-    reqValid -->|No| error1[Return 400\nBad Request]
-    reqValid -->|Yes| authMerchant[Verify merchant\nauthorization]
+    reqValid -->|No| error1[Return 400 Bad Request]
+    reqValid -->|Yes| authMerchant[Verify merchant authorization]
     
-    authMerchant --> merchantValid{Merchant\nvalid?}
-    merchantValid -->|No| error2[Return 401\nUnauthorized]
+    authMerchant --> merchantValid{Merchant valid?}
+    merchantValid -->|No| error2[Return 401 Unauthorized]
     
-    merchantValid -->|Yes| validateBank[Validate bank\ntype]
-    validateBank --> bankValid{Bank\nsupported?}
+    merchantValid -->|Yes| validateBank[Validate bank type]
+    validateBank --> bankValid{Bank supported?}
     
-    bankValid -->|No| error3[Return 400\nBank Not Supported]
-    bankValid -->|Yes| processPayment[Process payment\nwith bank]
+    bankValid -->|No| error3[Return 400 Bank Not Supported]
+    bankValid -->|Yes| processPayment[Process payment with bank]
     
-    processPayment --> paymentSuccess{Payment\nsucceeded?}
+    processPayment --> paymentSuccess{Payment succeeded?}
     
-    paymentSuccess -->|No| checkErrorType{Error\ntype?}
-    checkErrorType -->|Timeout| error4[Return 503\nBank Not Available]
-    checkErrorType -->|Insufficient Funds| error5[Return 400\nInsufficient Funds]
-    checkErrorType -->|Invalid Card| error6[Return 400\nCard Not Valid]
+    paymentSuccess -->|No| checkErrorType{Error type?}
+    checkErrorType -->|Timeout| error4[Return 503 Bank Not Available]
+    checkErrorType -->|Insufficient Funds| error5[Return 400 Insufficient Funds]
+    checkErrorType -->|Invalid Card| error6[Return 400 Card Not Valid]
     
-    paymentSuccess -->|Yes| logSuccess[Log successful\ntransaction]
-    logSuccess --> sendConfirmation[Send transaction\nconfirmation]
+    paymentSuccess -->|Yes| logSuccess[Log successful transaction]
+    logSuccess --> sendConfirmation[Send transaction confirmation]
     sendConfirmation --> finish((End))
     
     error1 --> finish
