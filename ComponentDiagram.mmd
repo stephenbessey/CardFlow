@@ -1,14 +1,37 @@
-graph TB
-    subgraph CardFlow System
-        API[API Gateway]
-        Auth[Auth Service]
-        Trans[Transaction Service]
-        Log[Logging Service]
-        DB[(Transaction DB)]
+graph LR
+    subgraph "AWS Cloud Environment"
+        subgraph "Merchant App"
+            MerchantApp["Merchant App<br/>(Simulator)"]:::app
+        end
+        
+        subgraph "AWS Lambda"
+            LambdaAPI["Payment Processor<br/>(AWS Lambda)"]:::lambda
+            PaymentHandler["Payment Handler<br/>(stephen_process_card.js)"]:::lambda
+            BankProcessor["Bank Transaction<br/>Processor"]:::lambda
+            TransactionLogger["Transaction<br/>Logger"]:::lambda
+        end
+        
+        subgraph "AWS DynamoDB"
+            MerchantTable[("Merchant Table<br/>DynamoDB")]:::database
+            TransactionTable[("TransactionLog1 Table<br/>DynamoDB")]:::database
+        end
+        
+        subgraph "External Bank APIs"
+            ChaseAPI["Chase Bank API<br/>(AWS Lambda)"]:::external
+            CitibankAPI["Citibank API<br/>(AWS Lambda)"]:::external
+        end
     end
     
-    API --> Auth
-    API --> Trans
-    Trans --> Log
-    Trans --> DB
-    Auth --> DB
+    MerchantApp -->|"HTTPS"| LambdaAPI
+    LambdaAPI --> PaymentHandler
+    PaymentHandler --> BankProcessor
+    PaymentHandler --> TransactionLogger
+    PaymentHandler -->|"Verify merchant"| MerchantTable
+    TransactionLogger -->|"Log transaction"| TransactionTable
+    BankProcessor -->|"Process Chase<br/>transactions"| ChaseAPI
+    BankProcessor -->|"Process Citibank<br/>transactions"| CitibankAPI
+    
+    classDef app fill:#D5E8D4,stroke:#82B366,stroke-width:1px
+    classDef lambda fill:#DAE8FC,stroke:#6C8EBF,stroke-width:1px
+    classDef database fill:#F5F5F5,stroke:#666666,stroke-width:1px
+    classDef external fill:#FFE6CC,stroke:#D79B00,stroke-width:1px
